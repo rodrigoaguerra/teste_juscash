@@ -1,2 +1,2 @@
 # teste_juscash
-Teste requerido para empresa JustCash.
+Teste requerido para empresa JusCash.
