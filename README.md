@@ -1,9 +1,9 @@
 # Sistema de Gerenciamento de Leads - JusCash
 Este projeto é uma aplicação de gerenciamento de leads, desenvolvida como parte de um teste técnico para a JusCash. A aplicação oferece funcionalidades básicas, incluindo:
-- Sistema de Login: Permite que os usuários façam login de forma segura.
+- Sistema de Login: Permite que os usuários façam login.
 - Cadastro de Leads: Funcionalidade para adicionar novos leads ao sistema.
 - Visualização de Leads: Exibe os dados detalhados de cada lead.
-- Atualização de Status: Permite alterar o status de um lead conforme necessário.
+- Atualização de Status: Permite alterar o status de um lead conforme necessário.<br>
 Para simular um ambiente de produção, os dados da aplicação são persistidos utilizando 'localStorage', garantindo assim a manutenção das informações mesmo após o fechamento do navegador.
 
 ### Comandos de Desenvolvimento
