@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
@@ -55,7 +57,18 @@ export default function SignUp(props) {
   };
 
   return (
-    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+    <Container component="main" maxWidth="xs">
+    <CssBaseline />
+    <Box 
+      component="form" 
+      noValidate 
+      onSubmit={handleSubmit} 
+      sx={{
+        marginTop: 8,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField
@@ -153,5 +166,6 @@ export default function SignUp(props) {
       </SignUpButton>
       {ErrorAlertComponent}
     </Box>
+  </Container>
   );
 }
