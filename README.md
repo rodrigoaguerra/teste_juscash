@@ -4,6 +4,7 @@ Este projeto é uma aplicação de gerenciamento de leads, desenvolvida como par
 - Cadastro de Leads: Funcionalidade para adicionar novos leads ao sistema.
 - Visualização de Leads: Exibe os dados detalhados de cada lead.
 - Atualização de Status: Permite alterar o status de um lead conforme necessário.<br>
+<br>
 Para simular um ambiente de produção, os dados da aplicação são persistidos utilizando 'localStorage', garantindo assim a manutenção das informações mesmo após o fechamento do navegador.
 
 ### Comandos de Desenvolvimento
