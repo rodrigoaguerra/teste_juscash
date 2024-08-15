@@ -7,22 +7,22 @@ Este projeto é uma aplicação de gerenciamento de leads, desenvolvida como par
 Para simular um ambiente de produção, os dados da aplicação são persistidos utilizando 'localStorage', garantindo assim a manutenção das informações mesmo após o fechamento do navegador.
 
 ### Comandos de Desenvolvimento
-Para rodar o projeto localmente, siga os passos abaixo:
+Para rodar o projeto localmente, siga os passos abaixo:<br>
 1. Clone o repositório:<br>
 ```bash
-    git clone https://github.com/rodrigoaguerra/teste_juscash.git
+git clone https://github.com/rodrigoaguerra/teste_juscash.git
 ```
 2. Navegue até o diretório do projeto:<br>
 ```bash
-    cd teste_juscash
+cd teste_juscash
 ```
 3. Instale as dependências:<br>
 ```bash
-    npm install
+npm install
 ```
 4. Inicie o servidor de desenvolvimento:<br>
 ```bash
-    npm start
+npm start
 ```
 O projeto estará disponível em http://localhost:3000 no seu navegador.
 
