@@ -8,24 +8,24 @@ Para simular um ambiente de produção, os dados da aplicação são persistidos
 
 ### Comandos de Desenvolvimento
 Para rodar o projeto localmente, siga os passos abaixo:
-    1. Clone o repositório:
-    ```bash
-        git clone https://github.com/rodrigoaguerra/teste_juscash.git
-    ```
-    2. Navegue até o diretório do projeto:
-    ```bash
-        cd teste_juscash
-    ```
-    3. Instale as dependências:
-    ```bash
-        npm install
-    ```
-    4. Inicie o servidor de desenvolvimento:
-     ```bash
-        npm start
-    ```
+1. Clone o repositório:<br>
+```bash
+    git clone https://github.com/rodrigoaguerra/teste_juscash.git
+```
+2. Navegue até o diretório do projeto:<br>
+```bash
+    cd teste_juscash
+```
+3. Instale as dependências:<br>
+```bash
+    npm install
+```
+4. Inicie o servidor de desenvolvimento:<br>
+```bash
+    npm start
+```
 O projeto estará disponível em http://localhost:3000 no seu navegador.
 
 ### Deploy do Projeto
-O projeto está disponível online no seguinte link:
+O projeto está disponível online no seguinte link:<br>
 [Clique aqui!](https://teste-juscash.pages.dev)
