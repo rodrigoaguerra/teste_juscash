@@ -12,7 +12,7 @@ function DragAndDropTable({ leads}) {
     col3: leads?.filter((row) => row.status === 'Analise do lead') ?? [],
   });
 
-
+  // popula o array de leads em caso de reload da pagina
   React.useEffect(() => {
     setColumns({
       col1: leads?.filter((row) => row.status === 'Cliente potencial') ?? [],
@@ -115,9 +115,9 @@ function DragAndDropTable({ leads}) {
                     style={{
                       padding: '10px',
                       margin: '5px',
-                      backgroundColor: '#2196F3',
-                      color: 'white',
+                      color: 'black',
                       cursor: 'grab',
+                      border: '1px solid black',
                       borderRadius: '5px',
                     }}
                   >
