@@ -17,7 +17,7 @@ import PhoneInput from './_Common/PhoneInput';
 import useErrorHandling from '../hooks/useErrorMessage';
 import useLeads from '../hooks/useLeads';
 import { useActions } from '../hooks';
-import * as Actions from '../views/Redux/actions';
+import * as Actions from '../redux/actions';
 
 export default function Modal({ title, type, open, lead = false, handleClose, handleClickOpen }) {
     const [name, setName] = React.useState(type === 'edit' ? lead.name : '');
@@ -65,7 +65,7 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
         // valida dados do lead
         validate(event.currentTarget);
 
-        if(!error.type) {
+        if(error.type === false) {
             // salva dados do lead no localStorange
             const res = store(event.currentTarget, actions);
             
@@ -85,13 +85,34 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
         }
     };
 
-    const handleCheckAll = (event) => {
-        setAll(event.target.checked);
-        setSucumbenciais(event.target.checked);
-        setContratuais(event.target.checked);
-        setDativos(event.target.checked);
-        setAutor(event.target.checked);
+    const handleOnChangeCheck = (event) => {
+        switch(event.target.name) {
+            case 'sucumbenciais':
+                setSucumbenciais(event.target.checked);
+                break;
+            case 'contratuais':
+                setContratuais(event.target.checked);
+                break;
+            case 'dativos':
+                setDativos(event.target.checked);
+                break;
+            case 'autor':
+                setAutor(event.target.checked);
+                break;
+            default: // all
+                //setAll();
+                setSucumbenciais(event.target.checked);
+                setContratuais(event.target.checked);
+                setDativos(event.target.checked);
+                setAutor(event.target.checked);
+                break;
+        }
     }
+
+    // marca checkbox todos quando todos estiverem selecionado
+    React.useEffect(() => {
+        setAll(sucumbenciais && contratuais && dativos && autor);
+    }, [sucumbenciais, contratuais, dativos, autor]); 
 
     return (
         <React.Fragment>
@@ -153,16 +174,49 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
                             Oportunidades
                         </Typography>
                         <FormGroup>
-                            <FormControlLabel control={<Checkbox name='all' onChange={handleCheckAll}/>} checked={all} label="Todos" />
-                            <FormControlLabel control={<Checkbox name='sucumbenciais' onChange={(event) => setSucumbenciais(event.target.checked)} checked={sucumbenciais} />} label="Honorários Sucumbenciais" />
-                            <FormControlLabel control={<Checkbox name='contratuais' onChange={(event) => setContratuais(event.target.checked)} checked={contratuais} />} label="Honorários Contratuais" />
-                            <FormControlLabel control={<Checkbox name='dativos' onChange={(event) => setDativos(event.target.checked)} checked={dativos} />} label="Honorários Dativos" />
-                            <FormControlLabel control={<Checkbox name='autor' onChange={(event) => setAutor(event.target.checked)} checked={autor} />} label="Crédito do Autor" />
+                            <FormControlLabel 
+                                control={<Checkbox 
+                                    name='all' 
+                                    onChange={handleOnChangeCheck} 
+                                    checked={all}
+                                    />} 
+                                label="Todos" 
+                                disabled={type === 'edit'} />
+                            <FormControlLabel 
+                                control={<Checkbox 
+                                    name='sucumbenciais' 
+                                    onChange={handleOnChangeCheck} 
+                                    checked={sucumbenciais} />} 
+                                label="Honorários Sucumbenciais" 
+                                disabled={type === 'edit'} />
+                            <FormControlLabel 
+                                control={<Checkbox 
+                                    name='contratuais' 
+                                    onChange={handleOnChangeCheck} 
+                                    checked={contratuais} />} 
+                                label="Honorários Contratuais" 
+                                disabled={type === 'edit'} />
+                            <FormControlLabel 
+                                control={<Checkbox 
+                                    name='dativos' 
+                                    onChange={handleOnChangeCheck} 
+                                    checked={dativos} />} 
+                                label="Honorários Dativos" 
+                                disabled={type === 'edit'} />
+                            <FormControlLabel 
+                                control={<Checkbox 
+                                    name='autor' 
+                                    onChange={handleOnChangeCheck} 
+                                    checked={autor} />} 
+                                label="Crédito do Autor" 
+                                disabled={type === 'edit'} />
                         </FormGroup>
                     </DialogContent>
                     <DialogActions>
-                        <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
-                        <Button variant="contained" type='submit' >Salvar</Button>  
+                        <Button variant="outlined" onClick={handleClose}>
+                            {type === 'create' ? 'Cancelar' : 'Fechar'}
+                        </Button>
+                        {type === 'create' && <Button variant="contained" type='submit' >Salvar</Button>}  
                     </DialogActions>
                 </Box>
             </Dialog>

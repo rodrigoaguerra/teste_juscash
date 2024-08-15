@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
 import { useActions } from '../hooks';
-import * as Actions from '../views/Redux/actions';
+import * as Actions from '../redux/actions';
 
 function DragAndDropTable({ leads}) {
   const actions = useActions(Actions);

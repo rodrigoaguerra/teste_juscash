@@ -5,7 +5,7 @@ import Paper from '@mui/material/Paper';
 import Table from '../../components/Table';
 import Modal from '../../components/Modal';
 import { useSelector, useActions } from '../../hooks';
-import * as Actions from '../Redux/actions';
+import * as Actions from '../../redux/actions';
 
 export default function Dashboard() {
   const navigate = useNavigate();
