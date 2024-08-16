@@ -29,6 +29,7 @@ const SignUpButton = styled(Button)({
 export default function SignUp(props) {
   const { setForm } = props;
 
+  const [error, setError] = React.useState(null);
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
@@ -41,18 +42,20 @@ export default function SignUp(props) {
 
   const { handleError, ErrorAlertComponent } = useErrorHandling();
   
-  const { error, validate, submit } = useSignUp(handleError);
+  const { validate, submit } = useSignUp();
   
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
     // valida o formulário
-    validate(event.currentTarget);
+    const res = validate(event.currentTarget);
 
     // verifica se houve erro
-    if(!error.type) {
+    if(res === false) {
       submit(event.currentTarget); // salva dados do usuário
       setForm('Sign In'); // redireciona para o login
+    } else {
+      setError(res); // input
+      handleError(res?.message ?? 'Erro ao criar usuário'); // alert      
     }
   };
 
@@ -79,8 +82,8 @@ export default function SignUp(props) {
             id="name"
             label="Seu nome completo"
             autoFocus
-            error={error.type === 'name'}
-            helperText={error.type === 'name' && error.message}
+            error={error?.type === 'name'}
+            helperText={error?.type === 'name' && error.message}
           />
         </Grid>
         <Grid item xs={12}>
@@ -92,12 +95,12 @@ export default function SignUp(props) {
             name="email"
             type='email'
             autoComplete="email"
-            error={error.type === 'email'}
-            helperText={error.type === 'email' && error.message}
+            error={error?.type === 'email'}
+            helperText={error?.type === 'email' && error.message}
           />
         </Grid>
         <Grid item xs={12}>
-          <FormControl fullWidth required variant="outlined" error={error.type === 'password'}>
+          <FormControl fullWidth required variant="outlined" error={error?.type === 'password'}>
             <InputLabel htmlFor="password">Senha</InputLabel>
             <OutlinedInput
               id="password"
@@ -119,11 +122,11 @@ export default function SignUp(props) {
                 </InputAdornment>
               }
             />
-            {error.type === 'password' && <FormHelperText> {error.message} </FormHelperText>}
+            {error?.type === 'password' && <FormHelperText> {error.message} </FormHelperText>}
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <FormControl fullWidth required variant="outlined" error={error.type === 'confirm_password'}>
+          <FormControl fullWidth required variant="outlined" error={error?.type === 'confirm_password'}>
             <InputLabel htmlFor="confirm-password">Confirme sua senha</InputLabel>
             <OutlinedInput
               id="confirm-password"
@@ -144,7 +147,7 @@ export default function SignUp(props) {
                 </InputAdornment>
               }
             />
-            {error.type === 'confirm_password' && <FormHelperText> {error.message} </FormHelperText>}
+            {error?.type === 'confirm_password' && <FormHelperText> {error.message} </FormHelperText>}
           </FormControl>
         </Grid>
       </Grid>
@@ -160,7 +163,6 @@ export default function SignUp(props) {
         variant="contained"
         sx={{ mt: 3, mb: 2 }}
         color="success"
-        disableRipple
       >
         Criar conta
       </SignUpButton>

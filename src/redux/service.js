@@ -27,8 +27,3 @@ export const updateStatusLead = async (leadUpdate) => {
 
   return leads;
 }
-
-export const deleteCustomer = async (_id) => {
-  
-  return [];
-}

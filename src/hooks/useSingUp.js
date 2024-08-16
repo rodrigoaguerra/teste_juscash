@@ -1,31 +1,22 @@
-import { useState } from 'react';
+function useSignUp() {
 
-function useSignUp(handleError) {
-    const [error, setError] = useState({ type: '', message: '' });
-    
     const validate = (form) => {
         const data = new FormData(form);
 
         // valida nome
         if(data.get('name') === '') {
-            setError({ type: 'name', message: 'O campo nome é obrigatório!' }); // input
-            handleError('O campo nome é obrigatório!'); // alert
-            return;
+            return { type: 'name', message: 'O campo nome é obrigatório!' };
         }
 
         // valida email
         if(data.get('email') === '') {
-            setError({ type: 'email', message: 'O campo email é obrigatório!' }); // input
-            handleError('O campo email é obrigatório!'); // alert
-            return;
+            return { type: 'email', message: 'O campo email é obrigatório!' };
         }
 
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         if(!regex.test(String(data.get('email')).toLowerCase())) {
-            setError({ type: 'email', message: 'Digite um e-mail valido!' }); // input
-            handleError('Digite um e-mail valido!'); // alert
-            return;
+            return { type: 'email', message: 'Digite um e-mail valido!' };
         }
 
         // valida senha
@@ -36,53 +27,50 @@ function useSignUp(handleError) {
 
         // vazia
         if(data.get('password') === '') {
-            setError({ type: 'password', message: 'Digite uma senha' }); // input
-            handleError('Digite uma senha'); // alert
-            return;
+            return { type: 'password', message: 'Digite uma senha' };
         }
 
         // minimo
         if (!minLength.test(data.get('password'))) {
-            setError({ type: 'password', message: 'Senha não tem pelo menos 8 caracteres' }); // input
-            handleError('Senha não tem pelo menos 8 caracteres'); // alert
-            return;
+            return { type: 'password', message: 'Senha não tem pelo menos 8 caracteres' };
         }
 
         // especial
         if (!hasSpecialChar.test(data.get('password'))) {
-            setError({ type: 'password', message: 'Senha não tem caractere especial' }); // input
-            handleError('Senha não tem caractere especial'); // alert
-            return;
+            return { type: 'password', message: 'Senha não tem caractere especial' };
         }
 
         // numérico
         if (!hasNumericChar.test(data.get('password'))) {
-            setError({ type: 'password', message: 'Senha não tem caractere numérico' }); // input
-            handleError('Senha não tem caractere numérico'); // alert
-            return;
+            return { type: 'password', message: 'Senha não tem caractere numérico' };
         }
 
         // alfanumérico
         if (!hasAlphaChar.test(data.get('password'))) {
-            setError({ type: 'password', message: 'Senha não tem caractere alfanumérico' }); // input
-            handleError('Senha não tem caractere alfanumérico'); // alert
-            return;
+            return { type: 'password', message: 'Senha não tem caractere alfanumérico' };
         }
 
         // confirma senha
         if(data.get('confirm_password') === '') {
-            setError({ type: 'confirm_password', message: 'Confirme sua senha' }); // input
-            handleError('Confirme sua senha'); // alert
-            return;
+            return { type: 'confirm_password', message: 'Confirme sua senha' };
         }
 
         if(data.get('password') !== data.get('confirm_password')) {
-            setError({ type: 'confirm_password', message: 'As senhas não conferem!' }); // input
-            handleError('As senhas não conferem!'); // alert
-            return;
+            return { type: 'confirm_password', message: 'As senhas não conferem!' };
         }
 
-        setError({ type: false, message: '' });
+        // Recupera o array de usuários do localStorage, ou inicializa um novo array
+        let usersArray = JSON.parse(localStorage.getItem('users')) || [];
+        
+        // verifica se usuário ja foi cadastrando
+        let user = usersArray.find((u) => u.email === data.get('email'));
+        
+        // se o usuário ja foi cadastrado
+        if(user) {
+            return { type: 'submit', message: 'Um usuário já foi cadastrado com esse e-mail!' };
+        } else {
+            return false;
+        }
     };
 
     const submit = (form) => {
@@ -106,7 +94,7 @@ function useSignUp(handleError) {
         localStorage.setItem('users', JSON.stringify(usersArray));
     };
 
-  return { error, validate, submit };
+  return { validate, submit };
 }
 
 export default useSignUp;

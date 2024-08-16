@@ -31,8 +31,9 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
 
     const actions = useActions(Actions);
 
+    const [error, setError ] = React.useState(null);
     const { handleError, ErrorAlertComponent } = useErrorHandling();
-    const { error, validate, store } = useLeads(handleError);
+    const { validate, store } = useLeads(handleError);
 
     React.useEffect(() => {
        if(lead) {
@@ -59,29 +60,39 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
         setPhone(event.target.value);
     };
 
+    // limpa os campos e fecha o modal
+    const handleModalClose = () => {
+        setPhone('');
+        setName('');
+        setEmail('');
+        setAll(true);
+        setSucumbenciais(true);
+        setContratuais(true);
+        setDativos(true);
+        setAutor(true);
+
+        handleClose(false);
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
  
         // valida dados do lead
-        validate(event.currentTarget);
+        const val = validate(event.currentTarget);
 
-        if(error.type === false) {
+        if(val === false) {
             // salva dados do lead no localStorange
             const res = store(event.currentTarget, actions);
             
             if(res) {
-                // limpa os campos
-                setPhone('');
-                setName('');
-                setEmail('');
-                setSucumbenciais(false);
-                setContratuais(false);
-                setDativos(false);
-                setAutor(false);
-                
-                // fecha o modal
-                handleClose(false);
+                handleModalClose();
+            } else  {
+                setError({ type: 'add_lead', message: 'Um lead já foi cadastrado com esse e-mail!' }); // input
+                handleError('Um lead já foi cadastrado com esse e-mail!'); // alert
             }
+        } else {    
+            setError(val);
+            handleError(val?.message ?? 'Não foi possivel criar o lead!');
         }
     };
 
@@ -113,14 +124,14 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
     React.useEffect(() => {
         setAll(sucumbenciais && contratuais && dativos && autor);
     }, [sucumbenciais, contratuais, dativos, autor]); 
-
+    
     return (
         <React.Fragment>
             {type === 'create' && <Button variant="contained" startIcon={<AddIcon />} onClick={handleClickOpen}>
                 Novo Lead
             </Button>}
             <Dialog
-                onClose={handleClose}
+                onClose={handleModalClose}
                 open={open}
             >
                 <Box component="form" onSubmit={handleSubmit} >
@@ -129,7 +140,7 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
                     </DialogTitle>
                     <IconButton
                     aria-label="close"
-                    onClick={handleClose}
+                    onClick={handleModalClose}
                     sx={{
                         position: 'absolute',
                         right: 8,
@@ -155,6 +166,8 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
                             disabled={type === 'edit'}
                             value={name}
                             onChange={handleNameChange}
+                            error={error?.type === 'name'}
+                            helperText={error?.type === 'name' && error.message}
                         />
                         <TextField
                             margin="normal"
@@ -168,8 +181,10 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
                             disabled={type === 'edit'}
                             value={email}
                             onChange={handleEmailChange}
+                            error={error?.type === 'email'}
+                            helperText={error?.type === 'email' && error.message}
                         />
-                        <PhoneInput name="phone" label="Telefone" value={phone} onChange={handlePhoneChange} required={true} disabled={type === 'edit'} />
+                        <PhoneInput name="phone" label="Telefone" value={phone} onChange={handlePhoneChange} required={true} disabled={type === 'edit'}  error={error} />
                         <Typography gutterBottom>
                             Oportunidades
                         </Typography>
@@ -213,7 +228,7 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
                         </FormGroup>
                     </DialogContent>
                     <DialogActions>
-                        <Button variant="outlined" onClick={handleClose}>
+                        <Button variant="outlined" onClick={handleModalClose}>
                             {type === 'create' ? 'Cancelar' : 'Fechar'}
                         </Button>
                         {type === 'create' && <Button variant="contained" type='submit' >Salvar</Button>}  

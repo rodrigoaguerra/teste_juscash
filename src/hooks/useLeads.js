@@ -1,50 +1,34 @@
-import { useState } from 'react';
 
-function useLeads(handleError) {
-    const [error, setError] = useState({ type: '', message: '' });
-    const [leads, setLeads] = useState([]);
+function useLeads() {
     
-    const load = () => {
-        const leadsArray = JSON.parse(localStorage.getItem('leads')) || [];
-        setLeads(leadsArray);
-    }
-
     // valida dados do formulário novo lead
     const validate = (form) => {
         const data = new FormData(form);
 
         // valida nome
         if(data.get('name') === '') {
-            setError({ type: 'name', message: 'O campo nome é obrigatório!' }); // input
-            handleError('O campo nome é obrigatório!'); // alert
-            return;
+            return { type: 'name', message: 'O campo nome é obrigatório!' };
         }
 
         // valida email
         if(data.get('email') === '') {
-            setError({ type: 'email', message: 'O campo email é obrigatório!' }); // input
-            handleError('O campo email é obrigatório!'); // alert
-            return;
+            return { type: 'email', message: 'O campo email é obrigatório!' };
         }
 
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         if(!regex.test(String(data.get('email')).toLowerCase())) {
-            setError({ type: 'email', message: 'Digite um e-mail valido!' }); // input
-            handleError('Digite um e-mail valido!'); // alert
-            return;
+            return { type: 'email', message: 'Digite um e-mail valido!' };
         }
 
         // valida telefone
         const phoneRegex = /^(\+55\s?)?(\(\d{2}\)\s?)?\d{4,5}-\d{4}$/;
 
         if (!phoneRegex.test(data.get('phone'))) {
-            setError({ type: 'phone', message: 'Por favor, insira um número de telefone válido.' }); // input
-            handleError('Por favor, insira um número de telefone válido.'); // alert
-            return;
+            return { type: 'phone', message: 'Por favor, insira um número de telefone válido.' };
         }
 
-        setError({ type: false, message: '' });
+        return false;
     };
 
     // salva novo lead no localStorage
@@ -73,13 +57,11 @@ function useLeads(handleError) {
 
             return true;
         } else {
-            setError({ type: 'add_lead', message: 'Um lead já foi cadastrado com esse e-mail!' }); // input
-            handleError('Um lead já foi cadastrado com esse e-mail!'); // alert
             return false;
         }
     };
 
-    return { leads, error, load, validate, store };
+    return { validate, store };
 }
 
 export default useLeads;

@@ -2,7 +2,7 @@ import React from 'react';
 import InputMask from 'react-input-mask';
 import TextField from '@mui/material/TextField';
 
-function PhoneInput({ name = "phone", label="Phone", value = "", onChange = () => {}, required = false, disabled=false}) {
+function PhoneInput({ name = "phone", label="Phone", value = "", onChange = () => {}, required = false, disabled=false, error = false }) {
   return (
     <InputMask
       mask="(99) 99999-9999"
@@ -21,6 +21,8 @@ function PhoneInput({ name = "phone", label="Phone", value = "", onChange = () =
             required={required}
             fullWidth
             disabled={disabled}
+            error={error?.type === 'phone'}
+            helperText={error?.type === 'phone' && error.message}
         />
       )}
     </InputMask>
