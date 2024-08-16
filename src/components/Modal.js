@@ -23,11 +23,11 @@ export default function Modal({ title, type, open, lead = false, handleClose, ha
     const [name, setName] = React.useState(type === 'edit' ? lead.name : '');
     const [email, setEmail] = React.useState(type === 'edit' ? lead.email : '');
     const [phone, setPhone] = React.useState(type === 'edit' ? lead.phone : '');
-    const [all, setAll] = React.useState(false);
-    const [sucumbenciais, setSucumbenciais] = React.useState(false);
-    const [contratuais, setContratuais] = React.useState(false);
-    const [dativos, setDativos] = React.useState(false);
-    const [autor, setAutor] = React.useState(false);
+    const [all, setAll] = React.useState(type === 'create');
+    const [sucumbenciais, setSucumbenciais] = React.useState(type === 'create');
+    const [contratuais, setContratuais] = React.useState(type === 'create');
+    const [dativos, setDativos] = React.useState(type === 'create');
+    const [autor, setAutor] = React.useState(type === 'create');
 
     const actions = useActions(Actions);
 
