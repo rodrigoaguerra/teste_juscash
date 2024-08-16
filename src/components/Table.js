@@ -1,144 +1,168 @@
 import React, { useState } from 'react';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import Modal from './Modal';
 import { useActions } from '../hooks';
 import * as Actions from '../redux/actions';
 
-function DragAndDropTable({ leads}) {
-  const actions = useActions(Actions);
-  
-  const [columns, setColumns] = useState({
-    col1: leads?.filter((row) => row.status === 'Cliente potencial') ?? [],
-    col2: leads?.filter((row) => row.status === 'Dados confirmados') ?? [],
-    col3: leads?.filter((row) => row.status === 'Analise do lead') ?? [],
-  });
+function App({ leads }) {
+    const actions = useActions(Actions);
+    // Estado inicial da tabela, onde cada coluna contém um objeto com nome, email e telefone
+    const [tableData, setTableData] = useState([]);
 
-  // popula o array de leads em caso de reload da pagina
-  React.useEffect(() => {
-    setColumns({
-      col1: leads?.filter((row) => row.status === 'Cliente potencial') ?? [],
-      col2: leads?.filter((row) => row.status === 'Dados confirmados') ?? [],
-      col3: leads?.filter((row) => row.status === 'Analise do lead') ?? [],
-    });
-  }, [leads]);
-
-  const handleDragStart = (event, item, column) => {
-    event.dataTransfer.setData('item', JSON.stringify(item));
-    event.dataTransfer.setData('column', column);
-  };
-
-  const handleDrop = (event, targetColumn) => {
-    event.preventDefault();
-
-    const item = JSON.parse(event.dataTransfer.getData('item'));
-    const sourceColumn = event.dataTransfer.getData('column');
-
-    if (sourceColumn !== targetColumn) {
-        // impede o retorn de lead para a coluna anterior
-        if(['Dados confirmados', 'Analise do lead'].includes(item.status) && targetColumn === 'col1') {
-          return;
-        } else if(item.status === 'Analise do lead' && ['col1', 'col2'].includes(targetColumn)) {
-          return;
+    // popula o array de leads na tabela
+    React.useEffect(() => {
+        if(leads) {
+            setTableData(leads.map((lead, index) => {
+                return {
+                    id: index,
+                    column1: lead.status === 'Cliente potencial' ? lead : null,
+                    column2: lead.status === 'Dados confirmados' ? lead : null,
+                    column3: lead.status === 'Analise do lead' ? lead : null,
+                }
+            }));
         }
+    }, [leads]);
 
-        // atualiza o item atual para a coluna anterior
-        setColumns((prevColumns) => {
-            
-            // atualiza o status do item local
-            if(targetColumn === 'col1') {
-                item.status = 'Cliente potencial';
-            } else if(targetColumn === 'col2') {
-                item.status = 'Dados confirmados';
-            } else if(targetColumn === 'col3') {
-                item.status = 'Analise do lead';
+    // Estado para armazenar o conteúdo arrastado
+    const [draggedItem, setDraggedItem] = useState(null);
+
+    // Função para começar a arrastar
+    const handleDragStart = (e, item, column) => {
+        setDraggedItem({ item, column });
+    };
+
+    // Função para permitir que o item seja arrastado sobre uma célula
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
+  // Função para soltar o item na célula de destino
+    const handleDrop = (e, targetItem, targetColumn) => {
+        e.preventDefault();
+
+        // Impede que o drop ocorra em colunas não permitidas
+        if (
+        draggedItem.item.id === targetItem.id &&
+        draggedItem.column !== targetColumn &&
+        !(
+            (draggedItem.column === 'column2' && targetColumn === 'column1') ||
+            (draggedItem.column === 'column3' && (targetColumn === 'column1' || targetColumn === 'column2'))
+        )
+        ) {
+        setTableData((prevData) =>
+            prevData.map((row) => {
+            if (row.id === targetItem.id) {
+                const lead = row[draggedItem.column]; // dados do lead arrastado
+
+                // atualiza o status do lead local
+                if(targetColumn === 'column1') {
+                    lead.status = 'Cliente potencial';
+                } else if(targetColumn === 'column2') {
+                    lead.status = 'Dados confirmados';
+                } else if(targetColumn === 'column3') {
+                    lead.status = 'Analise do lead';
+                }
+
+                // atualiza o status do lead no localStorage
+                actions.updateStatusLead(lead);
+
+                return {
+                ...row,
+                [targetColumn]: draggedItem.item[draggedItem.column],
+                [draggedItem.column]: null
+                };
             }
+            return row;
+            })
+        );
+        }
+        setDraggedItem(null);
+    };
 
-            // atualiza o status do item no localStorage
-            actions.updateStatusLead(item);
-            
-            const sourceItems = prevColumns[sourceColumn].filter((i) => i.id !== item.id);
-            const targetItems = [...prevColumns[targetColumn], item];
+    // modal para visualização do lead
+    const [open, setOpen] = React.useState(false);
+    const [lead, setLead] = React.useState();
 
-            return {
-            ...prevColumns,
-            [sourceColumn]: sourceItems,
-            [targetColumn]: targetItems,
-            };
-        });
+    const handleClick = (lead) => {
+        setLead(lead);
+        setOpen(true);
     }
-  };
 
-  const allowDrop = (event) => {
-    event.preventDefault();
-  };
-  
-  const [open, setOpen] = React.useState(false);
-  const [lead, setLead] = React.useState();
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
 
-  const handleClick = (item) => {
-    setLead(item);
-    setOpen(true);
-  }
+    const handleClose = () => {
+        setOpen(false);
+    };
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+    // Função para renderizar o conteúdo da célula
+    const renderCellContent = (data) => {
+        if (!data) return '';
+        return (
+            <div onClick={() => handleClick(data)} style={{ cursor: 'pointer' }}>
+                <strong>{data.name}</strong>
+            </div>
+        );
+    };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  return (
-    <div>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <th>Cliente Potencial</th>
-            <th>Dados Confirmados</th>
-            <th>Analise do Lead</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            {Object.keys(columns).map((col) => (
-              <td
-                key={col}
-                onDrop={(event) => handleDrop(event, col)}
-                onDragOver={allowDrop}
-                style={{ border: '1px solid black', padding: '20px', minHeight: '100px' }}
-              >
-                {columns[col].map((item) => (
-                  <div
-                    key={item.id}
-                    draggable
-                    onDragStart={(event) => handleDragStart(event, item, col)}
-                    onClick={() => handleClick(item)}
-                    style={{
-                      padding: '10px',
-                      margin: '5px',
-                      color: 'black',
-                      cursor: 'grab',
-                      border: '1px solid black',
-                      borderRadius: '5px',
-                    }}
-                  >
-                    <strong>{item.name}</strong>
-                  </div>
-                ))}
-              </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
-      <Modal 
-        title="Lead" 
-        type="edit" 
-        open={open} 
-        lead={lead}
-        handleClickOpen={handleClickOpen}
-        handleClose={handleClose}  
-        />
-    </div>
-  );
+    return (
+        <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650, border: 1}} aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Cliente Potencial</TableCell>
+                        <TableCell>Dados Confirmados</TableCell>
+                        <TableCell>Analise do Lead</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {tableData.map((row) => (
+                        <TableRow key={row.id}>
+                            <TableCell
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, row, 'column1')}
+                                onDragOver={(e) => handleDragOver(e)}
+                                onDrop={(e) => handleDrop(e, row, 'column1')}
+                            >
+                                {renderCellContent(row.column1)}
+                            </TableCell>
+                            <TableCell
+                                draggable={row.column2 !== null}  // Permitir arrastar apenas se a célula não estiver vazia
+                                onDragStart={(e) => handleDragStart(e, row, 'column2')}
+                                onDragOver={(e) => handleDragOver(e)}
+                                onDrop={(e) => handleDrop(e, row, 'column2')}
+                            >
+                                {renderCellContent(row.column2)}
+                            </TableCell>
+                            <TableCell
+                                draggable={row.column3 !== null}  // Permitir arrastar apenas se a célula não estiver vazia
+                                onDragStart={(e) => handleDragStart(e, row, 'column3')}
+                                onDragOver={(e) => handleDragOver(e)}
+                                onDrop={(e) => handleDrop(e, row, 'column3')}
+                            >
+                                {renderCellContent(row.column3)}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            <Modal 
+                title="Lead" 
+                type="edit" 
+                open={open} 
+                lead={lead}
+                handleClickOpen={handleClickOpen}
+                handleClose={handleClose}  
+                />
+        </TableContainer>
+    );
 }
 
-export default DragAndDropTable;
+export default App;

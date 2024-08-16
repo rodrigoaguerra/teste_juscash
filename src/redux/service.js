@@ -18,8 +18,6 @@ export const createLead = async (newLead, leadsArray) => {
 
 export const updateStatusLead = async (leadUpdate) => {
   const leadsArray = await getLeads();
-  console.log('leadsUpdate :', leadUpdate);
-  console.log('leadsArray :', leadsArray);
   
   // atualiza item no array
   const leads = leadsArray.map((l) => (leadUpdate.id === l.id) ? leadUpdate : l );
