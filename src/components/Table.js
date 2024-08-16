@@ -42,7 +42,7 @@ function App({ leads }) {
         e.preventDefault();
     };
 
-  // Função para soltar o item na célula de destino
+    // Função para soltar o item na célula de destino
     const handleDrop = (e, targetItem, targetColumn) => {
         e.preventDefault();
 
@@ -52,6 +52,7 @@ function App({ leads }) {
         draggedItem.column !== targetColumn &&
         !(
             (draggedItem.column === 'column2' && targetColumn === 'column1') ||
+            (draggedItem.column === 'column1' && targetColumn === 'column3') ||
             (draggedItem.column === 'column3' && (targetColumn === 'column1' || targetColumn === 'column2'))
         )
         ) {
